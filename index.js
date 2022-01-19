@@ -39,7 +39,7 @@ function onMessageHandler(target, context, msg, self) {
     var commandNameSplit = commandName.split(' ');
 
     // If the command is known, let's execute it
-    if (commandNameSplit[0] === '!dice') {
+    if (commandNameSplit[0] === '!dice' || commandNameSplit[0] === '!roll') {
         var numSides = 0
         if(commandNameSplit[1] !== undefined) {
             numSides = parseInt(commandNameSplit[1]);
