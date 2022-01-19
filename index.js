@@ -12,7 +12,7 @@ const app = express();
 const port = 4000;
 
 app.get('/', (req, res) => {
-    res.sendFile('index.html', {root:__dirname});
+    res.sendFile('index.html', { root: __dirname });
 });
 
 app.listen(port, () => {
@@ -31,32 +31,38 @@ tmiClient.on('connected', onConnectedHandler);
 tmiClient.connect();
 
 // Called every time a message comes in
-function onMessageHandler (target, context, msg, self) {
-    console.log(`onMessageHandler called`);
-  if (self) { return; } // Ignore messages from the bot
+function onMessageHandler(target, context, msg, self) {
+    if (self) { return; } // Ignore messages from the bot
 
-  // Remove whitespace from chat message
-  const commandName = msg.trim();
+    // Remove whitespace from chat message
+    const commandName = msg.trim();
+    var commandNameSplit = commandName.split(' ');
 
-  // If the command is known, let's execute it
-  if (commandName === '!dice') {
-    const num = rollDice();
-    tmiClient.say(target, `You rolled a ${num}`);
-    console.log(`* Executed ${commandName} command`);
-  } else {
-    console.log(`* Unknown command ${commandName}`);
-  }
+    // If the command is known, let's execute it
+    if (commandNameSplit[0] === '!dice') {
+        var numSides = 0
+        if(commandNameSplit[1] !== undefined) {
+            numSides = parseInt(commandNameSplit[1]);
+            if(numSides === NaN) {
+                numSides = 6;
+            }
+        }
+        const num = rollDice(numSides);
+        tmiClient.say(target, `You rolled a ${num}`);
+        console.log(`* Executed ${commandName} command`);
+    } else {
+        console.log(`* Unknown command ${commandName}`);
+    }
 }
 
 // Function called when the "dice" command is issued
-function rollDice () {
-  const sides = 6;
-  return Math.floor(Math.random() * sides) + 1;
+function rollDice(sides = 6) {
+    return Math.floor(Math.random() * sides) + 1;
 }
 
 // Called every time the bot connects to Twitch chat
-function onConnectedHandler (addr, port) {
-  console.log(`* Connected to ${addr}:${port}`);
-  console.log(opts);
+function onConnectedHandler(addr, port) {
+    console.log(`* Connected to ${addr}:${port}`);
+    console.log(opts);
 }
 
