@@ -10,6 +10,9 @@ const opts = JSON.parse(fs.readFileSync(path.resolve(__dirname, 'privateConst.js
 //Web App codes
 const app = express();
 const port = 4000;
+app.get('/webapp/index.js', (req, res) => {
+    res.sendFile('./webapp/index.js', { root: __dirname });
+});
 
 app.get('/', (req, res) => {
     res.sendFile('./webapp/index.html', { root: __dirname });
@@ -27,7 +30,7 @@ tmiClient.on('message', onMessageHandler);
 tmiClient.on('connected', onConnectedHandler);
 
 
-// Connect to Twitch:
+// Connect to Twitch
 tmiClient.connect();
 
 // Called every time a message comes in
