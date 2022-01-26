@@ -10,12 +10,15 @@ const opts = JSON.parse(fs.readFileSync(path.resolve(__dirname, 'privateConst.js
 //Web App codes
 const app = express();
 const port = 4000;
-app.get('/webapp/index.js', (req, res) => {
-    res.sendFile('./webapp/index.js', { root: __dirname });
-});
 
 app.get('/', (req, res) => {
     res.sendFile('./webapp/index.html', { root: __dirname });
+});
+app.get('/webapp/index.js', (req, res) => {
+    res.sendFile('./webapp/index.js', { root: __dirname });
+});
+app.get('/GetUser', (req, res) => {
+    res.send("Bob");
 });
 
 app.listen(port, () => {
