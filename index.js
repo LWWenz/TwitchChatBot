@@ -11,6 +11,8 @@ const opts = JSON.parse(fs.readFileSync(path.resolve(__dirname, 'privateConst.js
 const app = express();
 const port = 4000;
 
+var openConnections = [];
+
 app.get('/', (req, res) => {
     res.sendFile('./webapp/index.html', { root: __dirname });
 });
@@ -20,6 +22,51 @@ app.get('/webapp/index.js', (req, res) => {
 app.get('/GetUser', (req, res) => {
     res.send("Bob");
 });
+app.get('/event', (req, res) => {
+    req.socket.setTimeout(2147483647);
+
+    // send headers for event-stream connection
+    // see spec for more information
+    res.writeHead(200, {
+        'Content-Type': 'text/event-stream',
+        'Cache-Control': 'no-cache',
+        'Connection': 'keep-alive'
+    });
+    res.write('\n');
+
+    openConnections.push(res);
+
+    // When the request is closed, e.g. the browser window
+    // is closed. We search through the open connections
+    // array and remove this connection.
+    req.on("close", function() {
+        var toRemove;
+        for (var j =0 ; j < openConnections.length ; j++) {
+            if (openConnections[j] == res) {
+                toRemove =j;
+                break;
+            }
+        }
+        openConnections.splice(j,1);
+        console.log(openConnections.length);
+    });
+});
+
+//Setting this up to ping the website every X min?
+//To ensure event is always listening
+setInterval(() => {
+    var simpleJson = {
+        twitch : "twtich",
+        hello : "hello",
+    };
+    // we walk through each connection
+    openConnections.forEach((res) => {
+        var d = new Date();
+        res.write('id: ' + d.getMilliseconds() + '\n');
+        res.write('data:' + JSON.stringify(simpleJson) +   '\n\n'); // Note the extra newline
+    });
+
+}, 10000);
 
 app.listen(port, () => {
     console.log(`Now listening to port ${port}`);
