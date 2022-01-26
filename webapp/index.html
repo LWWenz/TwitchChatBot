@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en" ng-app>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        
+        <title>Twitch Bot</title>
+        <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
+        <script src="index.js"></script>
+    </head>
+    <body>
+        <div ng-controller="WebAppController as controller">
+            <div>Hello {{yourName}}!</div>
+            <div>
+                <input type="text" ng-model="yourName" placeholder="Enter a name here">
+            </div>
+        </div>
+    </body>
+</html>

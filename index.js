@@ -12,7 +12,7 @@ const app = express();
 const port = 4000;
 
 app.get('/', (req, res) => {
-    res.sendFile('index.html', { root: __dirname });
+    res.sendFile('./webapp/index.html', { root: __dirname });
 });
 
 app.listen(port, () => {
