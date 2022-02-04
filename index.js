@@ -22,6 +22,15 @@ app.get('/webapp/index.js', (req, res) => {
 app.get('/GetUser', (req, res) => {
     res.send("Bob");
 });
+app.get('/ToggleConnection', (req, res) => {
+    console.log(req.query.isConnected);
+    if(req.query.isConnected === 'false') {
+        // Connect to Twitch
+        tmiClient.connect();
+    } else {
+        tmiClient.disconnect();
+    }
+});
 app.get('/event', (req, res) => {
     req.socket.setTimeout(2147483647);
 
@@ -56,16 +65,12 @@ app.get('/event', (req, res) => {
 //To ensure event is always listening
 setInterval(() => {
     var simpleJson = {
-        twitch : "twtich",
-        hello : "hello",
+        id      : "heartBeat",
+        twitch  : "twtich",
+        hello   : "hello",
     };
-    // we walk through each connection
-    openConnections.forEach((res) => {
-        var d = new Date();
-        res.write('id: ' + d.getMilliseconds() + '\n');
-        res.write('data:' + JSON.stringify(simpleJson) +   '\n\n'); // Note the extra newline
-    });
 
+    sendJsonToFE(simpleJson);
 }, 10000);
 
 app.listen(port, () => {
@@ -74,14 +79,6 @@ app.listen(port, () => {
 
 //Twitch codes
 const tmiClient = tmi.client(opts);
-
-// Register handlers
-tmiClient.on('message', onMessageHandler);
-tmiClient.on('connected', onConnectedHandler);
-
-
-// Connect to Twitch
-tmiClient.connect();
 
 // Called every time a message comes in
 function onMessageHandler(target, context, msg, self) {
@@ -117,5 +114,34 @@ function rollDice(sides = 6) {
 function onConnectedHandler(addr, port) {
     console.log(`* Connected to ${addr}:${port}`);
     console.log(opts);
+
+    var json = {
+        id      : "botConnected",
+    };
+
+    sendJsonToFE(json);
 }
+
+const onDisconnectedHandler = (reason) => {
+    console.log(reason);
+
+    var json = {
+        id      : "botDisconnected",
+    };
+
+    sendJsonToFE(json);
+};
+
+const sendJsonToFE = (json) => {
+    openConnections.forEach((res) => {
+        var d = new Date();
+        res.write('id: ' + d.getMilliseconds() + '\n');
+        res.write('data:' + JSON.stringify(json) +   '\n\n'); // Note the extra newline
+    });
+};
+
+// Register handlers
+tmiClient.on('message', onMessageHandler);
+tmiClient.on('connected', onConnectedHandler);
+tmiClient.on('disconnected', onDisconnectedHandler);
 
