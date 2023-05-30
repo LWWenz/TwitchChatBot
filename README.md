@@ -5,7 +5,7 @@
 
 (2) npm i -s express
 
-(3) npm i -s tmi
+(3) npm i -s tmi.js
 
 ## Running the bot
 node index.js
